@@ -2211,8 +2211,6 @@ components:
           example: admin
       required:
         - name
-
-    #appointment
     AppointmentFields:
       title: Appointment fields
       description: Editable fields of an appointment.
