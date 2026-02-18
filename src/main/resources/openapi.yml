@@ -25,6 +25,8 @@ tags:
     description: Endpoints related to pet types.
   - name: specialty
     description: Endpoints related to vet specialties.
+  - name: appointment
+    description: Endpoints related to appointments.
 paths:
   /oops:
     get:
@@ -1770,6 +1772,50 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ProblemDetail'
+  /appointments:
+    post:
+      tags:
+        - appointment
+      operationId: addAppointment
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AppointmentFields'
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Appointment'
+          description: appointment created successfully.
+        304:
+          description: Not modified.
+          headers:
+            ETag:
+              description: An ID for this version of the response.
+              schema:
+                type: string
+        400:
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        404:
+          description: Visit not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        500:
+          description: Server error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+
 components:
   schemas:
     ProblemDetail:
@@ -2165,3 +2211,58 @@ components:
           example: admin
       required:
         - name
+
+    #appointment
+    AppointmentFields:
+      title: Appointment fields
+      description: Editable fields of an appointment.
+      type: object
+      properties:
+        appointmentTime:
+          title: Appointment Time
+          description: The date and time of the appointment.
+          type: string
+          format: date-time
+          example: '2013-01-01T10:30:00'
+        description:
+          title: Description
+          description: The description for the visit.
+          type: string
+          minLength: 1
+          maxLength: 255
+          example: 'rabies shot'
+      required:
+        - description
+    Appointment:
+      title: Appointment
+      description: A booking for an appointment.
+      allOf:
+        - $ref: '#/components/schemas/AppointmentFields'
+        - type: object
+          properties:
+            id:
+              title: ID
+              description: The ID of the appointment.
+              type: integer
+              format: int32
+              minimum: 0
+              example: 1
+              readOnly: true
+            petId:
+              title: Pet ID
+              description: The ID of the pet.
+              type: integer
+              format: int32
+              minimum: 0
+              example: 1
+            vetId:
+              title: Vet ID
+              description: The ID of the pet.
+              type: integer
+              format: int32
+              minimum: 0
+              example: 1
+          required:
+            - id
+            - petId
+            - vetId
